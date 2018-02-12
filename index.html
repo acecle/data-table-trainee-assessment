@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="content-language" content="en" />
+  <meta http-equiv="Content-Type" content="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+  <link href="main.css" media="all" rel="stylesheet" type="text/css" />
+
+  <title>BBC Data</title>
+</head>
+
+<body>
+  <script src="jquery-2.1.1.js"></script>
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <script>
+    $.getJSON('data.json', function(data) {
+      console.log(data);
+
+      var keynames = Object.keys(data);
+      var tr = [];
+      for (var i = 0; i < Object.keys(data).length; i++) {
+        tr.push('<tr>');
+        tr.push("<td>" + formattedDate(keynames[i]) + "</td>");
+        tr.push("<td>" + data[keynames[i]].bbcone + "</td>");
+        tr.push("<td>" + data[keynames[i]].bbctwo + "</td>");
+        tr.push("<td>" + data[keynames[i]].bbcthree + "</td>");
+        tr.push("<td>" + data[keynames[i]].bbcfour + "</td>");
+        tr.push("<td>" + data[keynames[i]].bbcnews24 + "</td>");
+        tr.push("<td>" + data[keynames[i]].cbbc + "</td>");
+        tr.push("<td>" + data[keynames[i]].cbeebies + "</td>");
+        tr.push('</tr>');
+      }
+      $('#tbody').append($(tr.join('')));
+
+    });
+
+    google.charts.load('current', {'packages': ['corechart', 'line']});
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+      var data = google.visualization.arrayToDataTable([
+        ['Month', 'BBC One', 'BBC Two', 'BBC Three', 'BBC Four', 'BBC News 24', 'CBBC', 'Cbeebies'],
+        ['Jan', 940, 1040, 441, 324, 1075, 898, 1343],
+        ['Feb', 904, 1038, 434, 295, 958, 793, 1246],
+        ['Mar', 980, 1158, 494, 314, 1062, 914, 1461],
+        ['Apr', 987, 1014, 488, 336, 1022, 792, 1382],
+        ['May', 1002, 1104, 512, 332, 1073, 840, 1368],
+        ['Jun', 837, 1002, 432, 311, 981, 801, 1265],
+        ['Jul', 921, 963, 489, 321, 1049, 881, 1340],
+        ['Aug', 960, 910, 506, 294, 1071, 885, 1312],
+        ['Sep', 952, 1068, 502, 281, 1020, 914, 1397],
+        ['Oct', 985, 1184, 546, 319, 1058, 1031, 1448],
+        ['Nov', 967, 1176, 474, 300, 1021, 1009, 1387],
+        ['Dec', 924, 1024, 427, 307, 1027, 844, 1300]
+      ]);
+
+      var options = {
+        title: 'Monthly Number of Broadcasts per BBC Channel 2009',
+        legend: {
+          position: 'right'
+        },
+        pointSize: 3,
+        width: 1000,
+        height: 500,
+        vAxis: {
+          title: 'Broadcasts'
+        },
+        hAxis: {
+          title: 'Month'
+        },
+      };
+
+      var chart = new google.visualization.LineChart(document.getElementById('chart'));
+      chart.draw(data, options);
+    }
+
+    function formattedDate(date) {
+      var date2 = new Date(date);
+      var monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+      var month = date2.getMonth();
+      var year = date2.getFullYear();
+      return monthNames[month] + ' ' + year;
+    }
+
+    function sortTable(n) {
+      if (n > 0) {
+        var table, rows, switching, i, x, y, shouldSwitch, direction, switchcount = 0;
+        table = document.getElementById("table");
+        switching = true;
+        direction = "asc";
+
+        while (switching) {
+          switching = false;
+          rows = table.getElementsByTagName("TR");
+          for (i = 1; i < (rows.length - 1); i++) {
+            shouldSwitch = false;
+            x = rows[i].getElementsByTagName("TD")[n];
+            y = rows[i + 1].getElementsByTagName("TD")[n];
+            if (direction == "asc") {
+              if (parseInt(x.innerHTML.toLowerCase()) > parseInt(y.innerHTML.toLowerCase())) {
+                shouldSwitch = true;
+                break;
+              }
+            } else if (direction == "desc") {
+              if (parseInt(x.innerHTML.toLowerCase()) < parseInt(y.innerHTML.toLowerCase())) {
+                shouldSwitch = true;
+                break;
+              }
+            }
+          }
+          if (shouldSwitch) {
+            rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+            switching = true;
+            switchcount++;
+          } else {
+            if (switchcount == 0 && direction == "asc") {
+              direction = "desc";
+              switching = true;
+            }
+          }
+        }
+      }
+
+      if (n == 0) {
+        var table, rows, switching, i, x, y, shouldSwitch, direction, switchcount = 0;
+        var months = ["January 2009", "February 2009", "March 2009", "April 2009", "May 2009", "June 2009", "July 2009", "August 2009", "September 2009", "October 2009", "November 2009", "December 2009"]
+        table = document.getElementById("table");
+        switching = true;
+        direction = "asc";
+
+        while (switching) {
+          switching = false;
+          rows = table.getElementsByTagName("TR");
+          for (i = 1; i < (rows.length - 1); i++) {
+            shouldSwitch = false;
+            x = rows[i].getElementsByTagName("TD")[n];
+            y = rows[i + 1].getElementsByTagName("TD")[n];
+            if (direction == "asc") {
+              if (months.indexOf(x.innerHTML) > months.indexOf(y.innerHTML)) {
+                shouldSwitch = true;
+                break;
+              }
+            } else if (direction == "desc") {
+              if (months.indexOf(x.innerHTML) < months.indexOf(y.innerHTML)) {
+                shouldSwitch = true;
+                break;
+              }
+            }
+          }
+          if (shouldSwitch) {
+            rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+            switching = true;
+            switchcount++;
+          } else {
+            if (switchcount == 0 && direction == "asc") {
+              direction = "desc";
+              switching = true;
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <table id="table">
+    <thead>
+      <th onclick="sortTable(0)">Date</th>
+      <th onclick="sortTable(1)">BBC One</th>
+      <th onclick="sortTable(2)">BBC Two</th>
+      <th onclick="sortTable(3)">BBC Three</th>
+      <th onclick="sortTable(4)">BBC Four</th>
+      <th onclick="sortTable(5)">BBC News 24</th>
+      <th onclick="sortTable(6)">CBBC</th>
+      <th onclick="sortTable(7)">Cbeebies</th>
+    </thead>
+    <tbody id="tbody">
+  </table>
+
+  <div id="chart"></div>
+
+</body>
+
+</html>
